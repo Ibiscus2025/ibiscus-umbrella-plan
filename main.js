@@ -1,97 +1,97 @@
-
-import React, { useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, onValue } from "firebase/database";
+// Firebase σύνδεση
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDtI4hKyZHEm5RrfrN50b1U7a0QcMy7zgk",
   authDomain: "ibiscus-dashboard.firebaseapp.com",
   projectId: "ibiscus-dashboard",
-  databaseURL: "https://ibiscus-dashboard-default-rtdb.firebaseio.com",
   storageBucket: "ibiscus-dashboard.appspot.com",
   messagingSenderId: "627165396165",
-  appId: "1:627165396165:web:b873652110014e218904ac"
+  appId: "1:627165396165:web:b873652110014e218904ac",
+  databaseURL: "https://ibiscus-dashboard-default-rtdb.europe-west1.firebasedatabase.app"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const umbrellas = [
+// Ομπρέλες
+const umbrellaNames = [
   ...Array.from({ length: 25 }, (_, i) => `P${i + 1}`),
   ...Array.from({ length: 20 }, (_, i) => `PL${i + 1}`),
-  ...Array.from({ length: 8 }, (_, i) => `B10${i + 1}`.slice(0, 4))
+  ...Array.from({ length: 8 }, (_, i) => `B10${i + 1}`)
 ];
 
-const statusOptions = [
-  { key: "ok", label: "Όλα ΟΚ", emoji: "✅" },
-  { key: "clean", label: "Θέλει καθάρισμα", emoji: "🧼" },
-  { key: "glasses", label: "Μαζέψτε ποτήρια", emoji: "🍸" },
-  { key: "broken", label: "Ζημιά στον εξοπλισμό", emoji: "🪑" },
-  { key: "other", label: "Άλλο", emoji: "📝" }
-];
+const statuses = {
+  ok: { color: "green", label: "✅ Όλα ΟΚ" },
+  clean: { color: "gray", label: "🧼 Θέλει καθάρισμα" },
+  trash: { color: "goldenrod", label: "🍸 Μαζέψτε ποτήρια/σκουπίδια" },
+  damage: { color: "red", label: "🪑 Ζημιά στον εξοπλισμό" }
+};
 
-function App() {
-  const [states, setStates] = useState({});
+// Προβολή
+const root = document.getElementById("root");
+root.style.fontFamily = "sans-serif";
+root.style.padding = "20px";
+root.innerHTML = "<h2>☂️ Ibiscus Umbrella Dashboard</h2>";
 
-  useEffect(() => {
-    const statesRef = ref(db, "umbrellas");
-    onValue(statesRef, (snapshot) => {
-      setStates(snapshot.val() || {});
-    });
-  }, []);
+// Χρήστης
+let waiter = prompt("Ποιος είσαι; (Άντζελα, Λευτέρης, Αναστασία)").trim();
 
-  const updateStatus = (id, status) => {
-    set(ref(db, "umbrellas/" + id), {
-      status,
-      updatedAt: new Date().toISOString()
-    });
-  };
+// Απόδοση κουμπιών και κατάστασης
+umbrellaNames.forEach((name) => {
+  const div = document.createElement("div");
+  div.style.border = "1px solid #ccc";
+  div.style.borderRadius = "12px";
+  div.style.padding = "10px";
+  div.style.margin = "10px 0";
+  div.style.backgroundColor = "#f9f9f9";
 
-  return (
-    <div style={{ fontFamily: "sans-serif", padding: 20 }}>
-      <h2>🏖 Κατάσταση Ομπρελών</h2>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-        {umbrellas.map((id) => (
-          <div
-            key={id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: 10,
-              padding: 10,
-              width: 130,
-              background: "#f9f9f9"
-            }}
-          >
-            <strong>{id}</strong>
-            <div style={{ marginTop: 5 }}>
-              {statusOptions.map(({ key, label, emoji }) => (
-                <button
-                  key={key}
-                  onClick={() => updateStatus(id, key)}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    marginTop: 5,
-                    padding: "5px",
-                    fontSize: "0.9em",
-                    background:
-                      states[id]?.status === key ? "#a3e4a7" : "#eee",
-                    border: "1px solid #ccc",
-                    borderRadius: 5
-                  }}
-                >
-                  {emoji} {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+  const title = document.createElement("h3");
+  title.textContent = `☂️ Ομπρέλα ${name}`;
+  div.appendChild(title);
 
-const container = document.getElementById("root");
-const root = createRoot(container);
-root.render(<App />);
+  const statusDiv = document.createElement("div");
+  statusDiv.style.marginBottom = "8px";
+  div.appendChild(statusDiv);
+
+  const btns = document.createElement("div");
+  btns.style.display = "flex";
+  btns.style.flexWrap = "wrap";
+  btns.style.gap = "8px";
+
+  for (const key in statuses) {
+    const btn = document.createElement("button");
+    btn.textContent = statuses[key].label;
+    btn.style.backgroundColor = statuses[key].color;
+    btn.style.color = "white";
+    btn.style.border = "none";
+    btn.style.padding = "8px 12px";
+    btn.style.borderRadius = "8px";
+    btn.style.cursor = "pointer";
+
+    btn.onclick = () => {
+      set(ref(db, `umbrellas/${name}`), {
+        status: key,
+        updatedBy: waiter,
+        updatedAt: new Date().toLocaleString()
+      });
+    };
+
+    btns.appendChild(btn);
+  }
+
+  div.appendChild(btns);
+  root.appendChild(div);
+
+  // Live ενημέρωση
+  onValue(ref(db, `umbrellas/${name}`), (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+      const { status, updatedBy, updatedAt } = data;
+      statusDiv.innerHTML = `Κατάσταση: <b style="color:${statuses[status]?.color || "black"}">${statuses[status]?.label}</b> <br> 👤 από ${updatedBy} στις ${updatedAt}`;
+    } else {
+      statusDiv.innerHTML = "Δεν έχει οριστεί κατάσταση ακόμα.";
+    }
+  });
+});
