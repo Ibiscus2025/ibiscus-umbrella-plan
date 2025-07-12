@@ -1,0 +1,1 @@
+// Placeholder – actual React app will be uploaded via GitHub
