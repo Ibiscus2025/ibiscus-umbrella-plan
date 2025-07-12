@@ -60,4 +60,21 @@ function renderGrid() {
     container.appendChild(card);
 
     // Live ενημέρωση εμφάνισης
-    onValue(ref(db, `umb
+    onValue(ref(db, `umbrellas/${id}`), (snapshot) => {
+      const data = snapshot.val();
+      const statusBox = document.getElementById(`status-${id}`);
+      const cardBox = document.getElementById(`card-${id}`);
+
+      if (data) {
+        const st = statuses.find(s => s.id === data.status);
+        statusBox.innerHTML = `${st.label} από ${data.updatedBy}`;
+        cardBox.style.backgroundColor = st.color;
+        statusBox.style.fontWeight = "bold";
+        statusBox.style.marginBottom = "8px";
+      } else {
+        statusBox.innerHTML = "Καμία ενημέρωση";
+        cardBox.style.backgroundColor = "#fff";
+      }
+    });
+  });
+}
