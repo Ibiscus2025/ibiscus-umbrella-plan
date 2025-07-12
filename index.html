@@ -1,11 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ibiscus Dashboard</title>
-</head>
-<body>
-  <div id="root"></div>
-</body>
+<html lang="el">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Κατάσταση Ομπρελών 🏖️</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        background: #f0f8ff;
+      }
+      h1 {
+        text-align: center;
+      }
+      .umbrella {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 10px;
+        color: white;
+      }
+      .ok { background: #4caf50; }
+      .clean { background: #9e9e9e; }
+      .collect { background: #ffc107; color: black; }
+      .damage { background: #f44336; }
+      select, button {
+        margin-left: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Κατάσταση Ομπρελών 🏖️</h1>
+    <label>👤 Ποιος είσαι; 
+      <select id="waiterSelect">
+        <option value="Άντζελα">Άντζελα</option>
+        <option value="Λευτέρης">Λευτέρης</option>
+        <option value="Αναστασία">Αναστασία</option>
+      </select>
+    </label>
+    <div id="app"></div>
+    <script type="module" src="main.js"></script>
+  </body>
 </html>
